@@ -6,29 +6,38 @@
     <title>3D Квест: Вольтик и Электробезопасность</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js" crossorigin="anonymous"></script>
     <style>
-        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;overflow:hidden}
+        /* Добавлено touch-action: none для блокировки прокрутки браузером и свободного обзора свайпом */
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;overflow:hidden;touch-action:none}
         #ui-layer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;z-index:100}
-        #header{background:rgba(41,128,185,.95);color:#fff;padding:15px;text-align:center;font-size:18px;box-shadow:0 4px 10px rgba(0,0,0,.3);text-transform:uppercase;letter-spacing:1px}
-        #score{color:#f1c40f;font-weight:700;font-size:22px}
-        #dialog-box{background:rgba(255,255,255,.95);margin:20px;padding:20px;border-radius:15px;border-left:8px solid #3498db;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none;max-width:500px;margin-left:auto;margin-right:auto;pointer-events:auto}
-        #dialog-title{font-weight:700;color:#2c3e50;font-size:22px;margin-bottom:8px}
-        #dialog-text{font-size:16px;color:#333;line-height:1.5}
-        #end-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(46,204,113,.9);z-index:200;display:none;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;pointer-events:auto}
-        #end-screen h1{font-size:40px;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
-        #end-screen p{font-size:20px;max-width:600px}
-        #restart-btn{margin-top:30px;padding:15px 30px;font-size:18px;font-weight:700;background:#fff;color:#27ae60;border:none;border-radius:30px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.2);transition:.2s}
+        #header{background:rgba(41,128,185,.95);color:#fff;padding:12px;text-align:center;font-size:16px;box-shadow:0 4px 10px rgba(0,0,0,.3);text-transform:uppercase;letter-spacing:1px}
+        #score{color:#f1c40f;font-weight:700;font-size:20px}
+        /* Уменьшены отступы, добавлен pointer (курсор) и оптимизирована ширина для мобилок */
+        #dialog-box{background:rgba(255,255,255,.95);margin:10px auto;padding:12px 15px;border-radius:12px;border-left:6px solid #3498db;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none;width:90%;max-width:400px;pointer-events:auto;cursor:pointer}
+        #dialog-title{font-weight:700;color:#2c3e50;font-size:18px;margin-bottom:4px}
+        #dialog-text{font-size:14px;color:#333;line-height:1.4}
+        /* Стиль для подсказки о закрытии */
+        .close-hint{font-size:11px;color:#95a5a6;margin-top:6px;font-style:italic}
+        #end-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(46,204,113,.9);z-index:200;display:none;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;pointer-events:auto;padding: 20px; box-sizing: border-box;}
+        #end-screen h1{font-size:32px;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
+        #end-screen p{font-size:18px;max-width:600px}
+        #restart-btn{margin-top:30px;padding:12px 25px;font-size:16px;font-weight:700;background:#fff;color:#27ae60;border:none;border-radius:30px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.2);transition:.2s}
         #restart-btn:hover{transform:scale(1.05)}
         .a-canvas{cursor:crosshair!important}
     </style>
     <script>
-    // Зашифрованная логика игры
+    // Зашифрованная логика игры (оставлена без изменений)
     const _0x1a2b=["\x64\x69\x61\x6C\x6F\x67\x2D\x62\x6F\x78","\x67\x65\x74\x45\x6C\x65\x6D\x65\x6E\x74\x42\x79\x49\x64","\x64\x69\x61\x6C\x6F\x67\x2D\x74\x69\x74\x6C\x65","\x26\x23\x39\x38\x38\x39\x3B\x20","\x69\x6E\x6E\x65\x72\x48\x54\x4D\x4C","\x64\x69\x61\x6C\x6F\x67\x2D\x74\x65\x78\x74","\x69\x6E\x6E\x65\x72\x54\x65\x78\x74","\x73\x75\x63\x63\x65\x73\x73","\x23\x32\x65\x63\x63\x37\x31","\x62\x6F\x72\x64\x65\x72\x4C\x65\x66\x74\x43\x6F\x6C\x6F\x72","\x73\x74\x79\x6C\x65","\x77\x61\x72\x6E\x69\x6E\x67","\x23\x66\x33\x39\x63\x31\x32","\x23\x33\x34\x39\x38\x64\x62","\x62\x6C\x6F\x63\x6B","\x64\x69\x73\x70\x6C\x61\x79","\x65\x6E\x64\x2D\x73\x63\x72\x65\x65\x6E","\x66\x6C\x65\x78","\x69\x6E\x74\x65\x72\x61\x63\x74\x61\x62\x6C\x65","\x62\x6F\x6F\x6C\x65\x61\x6E","\x73\x74\x72\x69\x6E\x67","\u0418\u0441\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u043E!","\x6D\x6F\x75\x73\x65\x65\x6E\x74\x65\x72","\x73\x63\x61\x6C\x65","\x31\x2E\x30\x35\x20\x31\x2E\x30\x35\x20\x31\x2E\x30\x35","\x73\x65\x74\x41\x74\x74\x72\x69\x62\x75\x74\x65","\x6D\x6F\x75\x73\x65\x6C\x65\x61\x76\x65","\x31\x20\x31\x20\x31","\x63\x6C\x69\x63\x6B","\x2E\x64\x61\x6E\x67\x65\x72\x2D\x65\x66\x66\x65\x63\x74","\x71\x75\x65\x72\x79\x53\x65\x6C\x65\x63\x74\x6F\x72\x41\x6C\x6C","\x72\x65\x6D\x6F\x76\x65\x43\x68\x69\x6C\x64","\x70\x61\x72\x65\x6E\x74\x4E\x6F\x64\x65","\x61\x6E\x69\x6D\x61\x74\x69\x6F\x6E","\x70\x72\x6F\x70\x65\x72\x74\x79\x3A\x20\x72\x6F\x74\x61\x74\x69\x6F\x6E\x3B\x20\x74\x6F\x3A\x20\x30\x20\x33\x36\x30\x20\x30\x3B\x20\x64\x75\x72\x3A\x20\x36\x30\x30","\x73\x63\x6F\x72\x65","\x2F","\u0412\u043E\u043B\u044C\u0442\u0438\u043A \u043D\u0430\u043F\u043E\u043C\u0438\u043D\u0430\u0435\u0442:","\u0412\u0441\u0451 \u0432 \u043F\u043E\u0440\u044F\u0434\u043A\u0435!","\x61\x64\x64\x45\x76\x65\x6E\x74\x4C\x69\x73\x74\x65\x6E\x65\x72","\x72\x65\x67\x69\x73\x74\x65\x72\x43\x6F\x6D\x70\x6F\x6E\x65\x6E\x74"];let _0x21c4=0;const _0x4c2b=5;function _0x3b89(_0x11a1,_0x22b2,_0x33c3){const _0x44d4=document[_0x1a2b[1]](_0x1a2b[0]);document[_0x1a2b[1]](_0x1a2b[2])[_0x1a2b[4]]="\u26A1 "+_0x11a1;document[_0x1a2b[1]](_0x1a2b[5])[_0x1a2b[6]]=_0x22b2;if(_0x33c3===_0x1a2b[7]){_0x44d4[_0x1a2b[10]][_0x1a2b[9]]=_0x1a2b[8]}else if(_0x33c3===_0x1a2b[11]){_0x44d4[_0x1a2b[10]][_0x1a2b[9]]=_0x1a2b[12]}else{_0x44d4[_0x1a2b[10]][_0x1a2b[9]]=_0x1a2b[13]}_0x44d4[_0x1a2b[10]][_0x1a2b[15]]=_0x1a2b[14]}function _0x55e5(){document[_0x1a2b[1]](_0x1a2b[16])[_0x1a2b[10]][_0x1a2b[15]]=_0x1a2b[17]}AFRAME[_0x1a2b[40]](_0x1a2b[18],{schema:{isFaulty:{type:_0x1a2b[19],default:!1},info:{type:_0x1a2b[20],default:""},successTitle:{type:_0x1a2b[20],default:_0x1a2b[21]},successText:{type:_0x1a2b[20],default:""},explanation:{type:_0x1a2b[20],default:""}},init:function(){let _0x66f6=this.el;let _0x77g7=this.data;this.isFixed=!1;_0x66f6[_0x1a2b[39]](_0x1a2b[22],()=>{_0x66f6[_0x1a2b[25]](_0x1a2b[23],_0x1a2b[24])});_0x66f6[_0x1a2b[39]](_0x1a2b[26],()=>{_0x66f6[_0x1a2b[25]](_0x1a2b[23],_0x1a2b[27])});_0x66f6[_0x1a2b[39]](_0x1a2b[28],()=>{if(_0x77g7.isFaulty){if(!this.isFixed){this.isFixed=!0;let _0x88h8=_0x66f6[_0x1a2b[30]](_0x1a2b[29]);_0x88h8.forEach(_0x99i9=>_0x99i9[_0x1a2b[32]][_0x1a2b[31]](_0x99i9));_0x66f6[_0x1a2b[25]](_0x1a2b[33],_0x1a2b[34]);_0x21c4++;document[_0x1a2b[1]](_0x1a2b[35])[_0x1a2b[6]]=_0x21c4+_0x1a2b[36]+_0x4c2b;_0x3b89(_0x77g7.successTitle,_0x77g7.successText,_0x1a2b[7]);if(_0x21c4===_0x4c2b){setTimeout(_0x55e5,1500)}}else{_0x3b89(_0x1a2b[37],_0x77g7.explanation,_0x1a2b[11])}}else{_0x3b89(_0x1a2b[38],_0x77g7.info,_0x1a2b[7])}})}});
     </script>
 </head>
 <body>
     <div id="ui-layer">
         <div id="header">Осмотри комнату и найди нарушения<br><span style="font-size: 14px; font-weight: normal;">Исправлено: <span id="score">0/5</span></span></div>
-        <div id="dialog-box"><div id="dialog-title">Вольтик</div><div id="dialog-text">Привет! Кликай на подозрительные предметы, чтобы проверить их.</div></div>
+        
+        <div id="dialog-box" onclick="this.style.display='none'">
+            <div id="dialog-title">Вольтик</div>
+            <div id="dialog-text">Привет! Кликай на подозрительные предметы, чтобы проверить их.</div>
+            <div class="close-hint">(нажми на это сообщение, чтобы скрыть)</div>
+        </div>
     </div>
     <div id="end-screen">
         <h1>Ура! Госэнергогазнадзор одобряет!</h1>
