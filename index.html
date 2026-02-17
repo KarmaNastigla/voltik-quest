@@ -3,69 +3,271 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Квест: Вольтик и Электробезопасность</title>
+    <title>3D Квест: Электробезопасность</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js" crossorigin="anonymous"></script>
     <style>
-        /* Добавлено touch-action: none для блокировки прокрутки браузером и свободного обзора свайпом */
-        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;overflow:hidden;touch-action:none}
-        #ui-layer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;z-index:100}
-        #header{background:rgba(41,128,185,.95);color:#fff;padding:12px;text-align:center;font-size:16px;box-shadow:0 4px 10px rgba(0,0,0,.3);text-transform:uppercase;letter-spacing:1px}
-        #score{color:#f1c40f;font-weight:700;font-size:20px}
-        /* Уменьшены отступы, добавлен pointer (курсор) и оптимизирована ширина для мобилок */
-        #dialog-box{background:rgba(255,255,255,.95);margin:10px auto;padding:12px 15px;border-radius:12px;border-left:6px solid #3498db;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none;width:90%;max-width:400px;pointer-events:auto;cursor:pointer}
-        #dialog-title{font-weight:700;color:#2c3e50;font-size:18px;margin-bottom:4px}
-        #dialog-text{font-size:14px;color:#333;line-height:1.4}
-        /* Стиль для подсказки о закрытии */
-        .close-hint{font-size:11px;color:#95a5a6;margin-top:6px;font-style:italic}
-        #end-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(46,204,113,.9);z-index:200;display:none;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;pointer-events:auto;padding: 20px; box-sizing: border-box;}
-        #end-screen h1{font-size:32px;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
-        #end-screen p{font-size:18px;max-width:600px}
-        #restart-btn{margin-top:30px;padding:12px 25px;font-size:16px;font-weight:700;background:#fff;color:#27ae60;border:none;border-radius:30px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.2);transition:.2s}
-        #restart-btn:hover{transform:scale(1.05)}
-        .a-canvas{cursor:crosshair!important}
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow: hidden; touch-action: none; background: #000; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; z-index: 100; }
+        #header { background: rgba(41, 128, 185, 0.95); color: #fff; padding: 12px; text-align: center; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-transform: uppercase; letter-spacing: 1px; }
+        #score { color: #f1c40f; font-weight: 700; font-size: 20px; }
+        #dialog-box { background: rgba(255, 255, 255, 0.95); margin: 10px auto; padding: 15px; border-radius: 12px; border-left: 6px solid #3498db; box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; width: 85%; max-width: 400px; pointer-events: auto; cursor: pointer; transition: 0.3s; }
+        #dialog-title { font-weight: 700; color: #2c3e50; font-size: 18px; margin-bottom: 5px; }
+        #dialog-text { font-size: 14px; color: #333; line-height: 1.4; }
+        .close-hint { font-size: 11px; color: #7f8c8d; margin-top: 8px; font-style: italic; opacity: 0.8; }
+        #end-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(46, 204, 113, 0.95); z-index: 200; display: none; flex-direction: column; justify-content: center; align-items: center; color: #fff; text-align: center; pointer-events: auto; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px); }
+        #end-screen h1 { font-size: 32px; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        #end-screen p { font-size: 18px; max-width: 600px; margin-bottom: 30px; }
+        #restart-btn { padding: 15px 30px; font-size: 16px; font-weight: 700; background: #fff; color: #27ae60; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.2s; }
+        #restart-btn:hover { transform: scale(1.05); }
+        .a-canvas { cursor: crosshair !important; }
     </style>
     <script>
-    // Зашифрованная логика игры (оставлена без изменений)
-    const _0x1a2b=["\x64\x69\x61\x6C\x6F\x67\x2D\x62\x6F\x78","\x67\x65\x74\x45\x6C\x65\x6D\x65\x6E\x74\x42\x79\x49\x64","\x64\x69\x61\x6C\x6F\x67\x2D\x74\x69\x74\x6C\x65","\x26\x23\x39\x38\x38\x39\x3B\x20","\x69\x6E\x6E\x65\x72\x48\x54\x4D\x4C","\x64\x69\x61\x6C\x6F\x67\x2D\x74\x65\x78\x74","\x69\x6E\x6E\x65\x72\x54\x65\x78\x74","\x73\x75\x63\x63\x65\x73\x73","\x23\x32\x65\x63\x63\x37\x31","\x62\x6F\x72\x64\x65\x72\x4C\x65\x66\x74\x43\x6F\x6C\x6F\x72","\x73\x74\x79\x6C\x65","\x77\x61\x72\x6E\x69\x6E\x67","\x23\x66\x33\x39\x63\x31\x32","\x23\x33\x34\x39\x38\x64\x62","\x62\x6C\x6F\x63\x6B","\x64\x69\x73\x70\x6C\x61\x79","\x65\x6E\x64\x2D\x73\x63\x72\x65\x65\x6E","\x66\x6C\x65\x78","\x69\x6E\x74\x65\x72\x61\x63\x74\x61\x62\x6C\x65","\x62\x6F\x6F\x6C\x65\x61\x6E","\x73\x74\x72\x69\x6E\x67","\u0418\u0441\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u043E!","\x6D\x6F\x75\x73\x65\x65\x6E\x74\x65\x72","\x73\x63\x61\x6C\x65","\x31\x2E\x30\x35\x20\x31\x2E\x30\x35\x20\x31\x2E\x30\x35","\x73\x65\x74\x41\x74\x74\x72\x69\x62\x75\x74\x65","\x6D\x6F\x75\x73\x65\x6C\x65\x61\x76\x65","\x31\x20\x31\x20\x31","\x63\x6C\x69\x63\x6B","\x2E\x64\x61\x6E\x67\x65\x72\x2D\x65\x66\x66\x65\x63\x74","\x71\x75\x65\x72\x79\x53\x65\x6C\x65\x63\x74\x6F\x72\x41\x6C\x6C","\x72\x65\x6D\x6F\x76\x65\x43\x68\x69\x6C\x64","\x70\x61\x72\x65\x6E\x74\x4E\x6F\x64\x65","\x61\x6E\x69\x6D\x61\x74\x69\x6F\x6E","\x70\x72\x6F\x70\x65\x72\x74\x79\x3A\x20\x72\x6F\x74\x61\x74\x69\x6F\x6E\x3B\x20\x74\x6F\x3A\x20\x30\x20\x33\x36\x30\x20\x30\x3B\x20\x64\x75\x72\x3A\x20\x36\x30\x30","\x73\x63\x6F\x72\x65","\x2F","\u0412\u043E\u043B\u044C\u0442\u0438\u043A \u043D\u0430\u043F\u043E\u043C\u0438\u043D\u0430\u0435\u0442:","\u0412\u0441\u0451 \u0432 \u043F\u043E\u0440\u044F\u0434\u043A\u0435!","\x61\x64\x64\x45\x76\x65\x6E\x74\x4C\x69\x73\x74\x65\x6E\x65\x72","\x72\x65\x67\x69\x73\x74\x65\x72\x43\x6F\x6D\x70\x6F\x6E\x65\x6E\x74"];let _0x21c4=0;const _0x4c2b=5;function _0x3b89(_0x11a1,_0x22b2,_0x33c3){const _0x44d4=document[_0x1a2b[1]](_0x1a2b[0]);document[_0x1a2b[1]](_0x1a2b[2])[_0x1a2b[4]]="\u26A1 "+_0x11a1;document[_0x1a2b[1]](_0x1a2b[5])[_0x1a2b[6]]=_0x22b2;if(_0x33c3===_0x1a2b[7]){_0x44d4[_0x1a2b[10]][_0x1a2b[9]]=_0x1a2b[8]}else if(_0x33c3===_0x1a2b[11]){_0x44d4[_0x1a2b[10]][_0x1a2b[9]]=_0x1a2b[12]}else{_0x44d4[_0x1a2b[10]][_0x1a2b[9]]=_0x1a2b[13]}_0x44d4[_0x1a2b[10]][_0x1a2b[15]]=_0x1a2b[14]}function _0x55e5(){document[_0x1a2b[1]](_0x1a2b[16])[_0x1a2b[10]][_0x1a2b[15]]=_0x1a2b[17]}AFRAME[_0x1a2b[40]](_0x1a2b[18],{schema:{isFaulty:{type:_0x1a2b[19],default:!1},info:{type:_0x1a2b[20],default:""},successTitle:{type:_0x1a2b[20],default:_0x1a2b[21]},successText:{type:_0x1a2b[20],default:""},explanation:{type:_0x1a2b[20],default:""}},init:function(){let _0x66f6=this.el;let _0x77g7=this.data;this.isFixed=!1;_0x66f6[_0x1a2b[39]](_0x1a2b[22],()=>{_0x66f6[_0x1a2b[25]](_0x1a2b[23],_0x1a2b[24])});_0x66f6[_0x1a2b[39]](_0x1a2b[26],()=>{_0x66f6[_0x1a2b[25]](_0x1a2b[23],_0x1a2b[27])});_0x66f6[_0x1a2b[39]](_0x1a2b[28],()=>{if(_0x77g7.isFaulty){if(!this.isFixed){this.isFixed=!0;let _0x88h8=_0x66f6[_0x1a2b[30]](_0x1a2b[29]);_0x88h8.forEach(_0x99i9=>_0x99i9[_0x1a2b[32]][_0x1a2b[31]](_0x99i9));_0x66f6[_0x1a2b[25]](_0x1a2b[33],_0x1a2b[34]);_0x21c4++;document[_0x1a2b[1]](_0x1a2b[35])[_0x1a2b[6]]=_0x21c4+_0x1a2b[36]+_0x4c2b;_0x3b89(_0x77g7.successTitle,_0x77g7.successText,_0x1a2b[7]);if(_0x21c4===_0x4c2b){setTimeout(_0x55e5,1500)}}else{_0x3b89(_0x1a2b[37],_0x77g7.explanation,_0x1a2b[11])}}else{_0x3b89(_0x1a2b[38],_0x77g7.info,_0x1a2b[7])}})}});
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+            if (type === 'success') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(600, audioCtx.currentTime); gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            }
+        }
+        
+        // ВНИМАНИЕ: Теперь в игре 6 нарушений! (Добавлен сломанный выключатель)
+        let score = 0; const maxScore = 6; let dialogTimeout;
+        
+        function showDialog(title, text, type) {
+            const box = document.getElementById('dialog-box');
+            document.getElementById('dialog-title').innerHTML = "⚡ " + title;
+            document.getElementById('dialog-text').innerText = text;
+            if (type === 'success') box.style.borderLeftColor = '#2ecc71'; else if (type === 'warning') box.style.borderLeftColor = '#e74c3c'; else box.style.borderLeftColor = '#3498db';
+            box.style.display = 'block';
+            clearTimeout(dialogTimeout); dialogTimeout = setTimeout(() => { box.style.display = 'none'; }, 6000);
+        }
+
+        // Логика инспекции предметов
+        AFRAME.registerComponent('interactable', {
+            schema: { isFaulty: {type: 'boolean', default: false}, info: {type: 'string', default: ''}, successTitle: {type: 'string', default: 'Исправлено!'}, successText: {type: 'string', default: ''}, explanation: {type: 'string', default: ''} },
+            init: function () {
+                let el = this.el; let data = this.data; this.isFixed = false;
+                el.addEventListener('mouseenter', () => el.setAttribute('scale', (el.object3D.scale.x * 1.05) + ' ' + (el.object3D.scale.y * 1.05) + ' ' + (el.object3D.scale.z * 1.05)));
+                el.addEventListener('mouseleave', () => el.setAttribute('scale', (el.object3D.scale.x / 1.05) + ' ' + (el.object3D.scale.y / 1.05) + ' ' + (el.object3D.scale.z / 1.05)));
+                el.addEventListener('click', () => {
+                    if (data.isFaulty) {
+                        if (!this.isFixed) {
+                            this.isFixed = true; playSound('success');
+                            let effects = el.querySelectorAll('.danger-effect'); effects.forEach(e => e.parentNode.removeChild(e));
+                            el.setAttribute('animation__bounce', 'property: position; dir: alternate; dur: 200; to: ' + el.object3D.position.x + ' ' + (el.object3D.position.y + 0.1) + ' ' + el.object3D.position.z + '; loop: 2');
+                            score++; document.getElementById('score').innerText = score + '/' + maxScore; showDialog(data.successTitle, data.successText, 'success');
+                            if (score === maxScore) setTimeout(() => { document.getElementById('end-screen').style.display = 'flex'; }, 1500);
+                        } else { playSound('click'); showDialog('Вольтик напоминает:', data.explanation, 'info'); }
+                    } else { playSound('click'); showDialog('Всё в порядке!', data.info, 'info'); }
+                });
+            }
+        });
+
+        // Логика работающего выключателя
+        AFRAME.registerComponent('working-switch', {
+            init: function () {
+                let on = true; let el = this.el;
+                el.addEventListener('mouseenter', () => el.setAttribute('scale', '1.1 1.1 1.1'));
+                el.addEventListener('mouseleave', () => el.setAttribute('scale', '1 1 1'));
+                el.addEventListener('click', () => {
+                    on = !on;
+                    document.getElementById('main-light').setAttribute('intensity', on ? '0.8' : '0.1');
+                    document.getElementById('bulb-glow').setAttribute('material', 'emissiveIntensity', on ? '0.8' : '0.1');
+                    playSound('click');
+                    showDialog('Всё в порядке!', 'Выключатель исправен, корпус цел. Освещение работает штатно.', 'info');
+                });
+            }
+        });
     </script>
 </head>
 <body>
     <div id="ui-layer">
-        <div id="header">Осмотри комнату и найди нарушения<br><span style="font-size: 14px; font-weight: normal;">Исправлено: <span id="score">0/5</span></span></div>
-        
+        <div id="header">Осмотри комнату и найди нарушения<br><span style="font-size: 14px; font-weight: normal;">Исправлено: <span id="score">0/6</span></span></div>
         <div id="dialog-box" onclick="this.style.display='none'">
             <div id="dialog-title">Вольтик</div>
-            <div id="dialog-text">Привет! Кликай на подозрительные предметы, чтобы проверить их.</div>
-            <div class="close-hint">(нажми на это сообщение, чтобы скрыть)</div>
+            <div id="dialog-text">Привет! Свайпай по экрану, чтобы осматриваться. Кликай на предметы для их проверки!</div>
+            <div class="close-hint">(нажми, чтобы скрыть)</div>
         </div>
     </div>
     <div id="end-screen">
-        <h1>Ура! Госэнергогазнадзор одобряет!</h1>
-        <p>Комната в полной безопасности. Ты отлично справился с ролью инспектора и помог Вольтику устранить все угрозы.</p>
+        <h1>Ура! Одобрено!</h1>
+        <p>Комната в полной безопасности. Ты отлично справился с ролью инспектора Госэнергогазнадзора!</p>
         <button id="restart-btn" onclick="location.reload()">Пройти проверку заново</button>
     </div>
-    <a-scene cursor="rayOrigin: mouse" background="color: #d1d8e0">
+
+    <a-scene cursor="rayOrigin: mouse" background="color: #a4b0be" shadow="type: pcfsoft">
+        <a-assets>
+            <a-mixin id="solid" shadow="cast: true; receive: true"></a-mixin>
+            <a-mixin id="danger-glow" material="emissive: #e74c3c; emissiveIntensity: 0.8"></a-mixin>
+            <a-mixin id="metal" color="#7f8c8d" material="roughness: 0.5; metalness: 0.5"></a-mixin>
+            <a-mixin id="socket-base" width="0.25" height="0.25" depth="0.02" color="#333"></a-mixin>
+            <a-mixin id="socket-front" width="0.22" height="0.22" depth="0.02" color="#ffffff"></a-mixin>
+        </a-assets>
+
         <a-entity camera look-controls="wasdControlsEnabled: false; magicWindowTrackingEnabled: false" position="0 1.6 0"></a-entity>
         
-        <a-plane position="0 0 0" rotation="-90 0 0" width="12" height="12" color="#cf9b76"></a-plane>
-        <a-plane position="0 3 -6" width="12" height="6" color="#ecf0f1"></a-plane>
-        <a-plane position="-6 3 0" rotation="0 90 0" width="12" height="6" color="#bdc3c7"></a-plane>
-        <a-plane position="6 3 0" rotation="0 -90 0" width="12" height="6" color="#bdc3c7"></a-plane>
-        <a-plane position="0 3 6" rotation="0 180 0" width="12" height="6" color="#ecf0f1"></a-plane>
+        <a-light id="main-light" type="point" position="0 5 0" color="#fff" intensity="0.8" distance="15" castShadow="true"></a-light>
+        <a-light type="ambient" color="#fff" intensity="0.3"></a-light>
         
-        <a-entity position="-3.5 0.5 3" rotation="0 90 0" interactable="info: 'Уютный диван. Главное — не класть на него работающие электроприборы, чтобы избежать перегрева.'"><a-box position="0 0 0" width="2" height="0.5" depth="1" color="#34495e"></a-box> <a-box position="0 0.5 -0.4" width="2" height="0.8" depth="0.2" color="#2c3e50"></a-box> <a-box position="-1 0.3 0" width="0.2" height="0.6" depth="1" color="#2c3e50"></a-box> <a-box position="1 0.3 0" width="0.2" height="0.6" depth="1" color="#2c3e50"></a-box> </a-entity>
-        <a-box position="-4.5 2 -4" width="2" height="4" depth="1" color="#8e44ad" interactable="info: 'Обычный шкаф для одежды. Проводка за ним не зажата — это хорошо.'"></a-box>
+        <a-plane position="0 0 0" rotation="-90 0 0" width="12" height="12" color="#95a5a6" shadow="receive: true"></a-plane>
+        <a-plane position="0 3 -6" width="12" height="6" color="#bdc3c7" shadow="receive: true"></a-plane>
+        <a-plane position="-6 3 0" rotation="0 90 0" width="12" height="6" color="#bdc3c7" shadow="receive: true"></a-plane>
+        <a-plane position="6 3 0" rotation="0 -90 0" width="12" height="6" color="#bdc3c7" shadow="receive: true"></a-plane>
+        <a-plane position="0 3 6" rotation="0 180 0" width="12" height="6" color="#bdc3c7" shadow="receive: true"></a-plane>
+        <a-plane position="0 6 0" rotation="90 0 0" width="12" height="12" color="#ecf0f1" shadow="receive: true"></a-plane>
+
+        <a-entity position="0 5.8 0" interactable="info: 'Люстра. Плафон целый, лампа надежно вкручена, нагрева корпуса нет.'">
+            <a-cylinder mixin="solid" radius="0.5" height="0.1" color="#7f8c8d"></a-cylinder>
+            <a-cylinder mixin="solid" position="0 -0.1 0" radius="0.4" height="0.2" color="#ecf0f1" material="opacity: 0.8"></a-cylinder>
+            <a-sphere id="bulb-glow" position="0 -0.2 0" radius="0.2" color="#f1c40f" material="emissive: #f1c40f; emissiveIntensity: 0.8"></a-sphere>
+        </a-entity>
+
+        <a-plane position="0 0.01 -1.5" rotation="-90 0 0" width="8" height="5" color="#e67e22" shadow="receive: true" interactable="info: 'Ковер на полу. Под ним нет скрытых проводов от техники — это очень важно для пожарной безопасности!'"></a-plane>
+
+        <a-entity position="0 0.5 1" rotation="0 180 0" interactable="info: 'Уютный диван. Стоит на безопасном расстоянии от обогревателей и не пережимает кабели от электроприборов.'">
+            <a-box mixin="solid" position="0 0 0" width="2.2" height="0.4" depth="1" color="#34495e"></a-box>
+            <a-box mixin="solid" position="0 0.4 -0.4" width="2.2" height="0.6" depth="0.2" color="#2c3e50"></a-box>
+            <a-box mixin="solid" position="-1.1 0.2 0" width="0.2" height="0.4" depth="1" color="#2c3e50"></a-box>
+            <a-box mixin="solid" position="1.1 0.2 0" width="0.2" height="0.4" depth="1" color="#2c3e50"></a-box>
+            <a-box mixin="solid" position="-0.5 0.25 -0.1" width="0.8" height="0.1" depth="0.7" color="#34495e"></a-box>
+            <a-box mixin="solid" position="0.5 0.25 -0.1" width="0.8" height="0.1" depth="0.7" color="#34495e"></a-box>
+        </a-entity>
+
+        <a-entity position="0 0.3 -1.5" interactable="info: 'Журнальный столик. Острых углов нет, проводов рядом тоже. Все чисто.'">
+             <a-box mixin="solid" position="0 0.2 0" width="1.2" height="0.05" depth="0.8" color="#8e44ad"></a-box>
+             <a-cylinder mixin="solid" position="-0.5 0 0.3" radius="0.04" height="0.4" color="#333"></a-cylinder>
+             <a-cylinder mixin="solid" position="0.5 0 0.3" radius="0.04" height="0.4" color="#333"></a-cylinder>
+             <a-cylinder mixin="solid" position="-0.5 0 -0.3" radius="0.04" height="0.4" color="#333"></a-cylinder>
+             <a-cylinder mixin="solid" position="0.5 0 -0.3" radius="0.04" height="0.4" color="#333"></a-cylinder>
+        </a-entity>
+
+        <a-entity position="-5.2 2 -3" rotation="0 90 0" interactable="info: 'Шкаф для одежды. Стоит устойчиво. Позади него нет заслоненных розеток, к которым затруднен доступ.'">
+            <a-box mixin="solid" width="1.8" height="3.8" depth="0.8" color="#8e44ad"></a-box>
+            <a-box mixin="solid" position="-0.45 0 0.41" width="0.85" height="3.7" depth="0.02" color="#9b59b6"></a-box>
+            <a-box mixin="solid" position="0.45 0 0.41" width="0.85" height="3.7" depth="0.02" color="#9b59b6"></a-box>
+            <a-cylinder mixin="metal" position="-0.1 0 0.43" radius="0.02" height="0.2"></a-cylinder>
+            <a-cylinder mixin="metal" position="0.1 0 0.43" radius="0.02" height="0.2"></a-cylinder>
+        </a-entity>
+
+        <a-entity position="5.3 1.8 -4" rotation="0 -90 0" interactable="info: 'Холодильник. Задняя стенка (где компрессор) не прижата вплотную к обоям, вентиляция не перекрыта. Подключен напрямую, без удлинителей.'">
+            <a-box mixin="solid" width="1.4" height="3.5" depth="1.2" color="#ecf0f1"></a-box>
+            <a-box position="0 -0.5 0.61" width="1.35" height="2.4" depth="0.02" color="#bdc3c7"></a-box>
+            <a-box position="0 1.25 0.61" width="1.35" height="0.9" depth="0.02" color="#bdc3c7"></a-box>
+            <a-box position="-0.6 -0.5 0.63" width="0.05" height="0.6" depth="0.05" color="#95a5a6"></a-box>
+            <a-box position="-0.6 1.25 0.63" width="0.05" height="0.4" depth="0.05" color="#95a5a6"></a-box>
+        </a-entity>
         
-        <a-entity position="0 0 -4.5"><a-box position="0 0.5 0" width="3" height="0.8" depth="0.8" color="#7f8c8d" interactable="info: 'Тумба целая, провода аккуратно спрятаны за ней.'"></a-box><a-box position="0 1.5 0" width="2.2" height="1.2" depth="0.1" color="#111" interactable="info: 'Телевизор исправен. Вилка плотно сидит в розетке, экран не перегревается.'"></a-box></a-entity>
-        <a-entity position="4 1.8 -4" interactable="info: 'Холодильник работает исправно. Вентиляционная решетка сзади открыта для охлаждения компрессора.'"><a-box width="1.5" height="3.5" depth="1.5" color="#ecf0f1"></a-box><a-box position="-0.75 0 0.8" width="0.1" height="0.6" depth="0.1" color="#bdc3c7"></a-box> </a-entity>
-        <a-entity position="-2 1 -5.9" interactable="isFaulty: true; successTitle: 'Розетка обесточена!'; successText: 'Ты вовремя заметил неисправность.'; explanation: 'Искрение и треск в розетке говорят о плохом контакте. Если её не заменить, произойдет короткое замыкание и пожар.'"><a-box width="0.3" height="0.3" depth="0.05" color="#ecf0f1"></a-box><a-entity class="danger-effect"><a-sphere position="0 0 0.1" radius="0.08" color="#f1c40f" material="emissive: #f1c40f" animation="property: scale; to: 1.5 1.5 1.5; dir: alternate; dur: 100; loop: true"></a-sphere></a-entity></a-entity>
-        <a-entity position="2 0.05 -2" rotation="0 45 0" interactable="isFaulty: true; successTitle: 'Кабель заменен!'; successText: 'Отлично, теперь провод в двойной изоляции.'; explanation: 'Использование кабеля с оголенными проводами или скрутками из изоленты смертельно опасно. Одно касание — и можно получить удар током.'"><a-cylinder radius="0.04" height="2" rotation="0 0 90" color="#333"></a-cylinder><a-cylinder class="danger-effect" position="0.3 0 0" radius="0.045" height="0.4" rotation="0 0 90" color="#e74c3c" animation="property: material.color; to: #c0392b; dir: alternate; dur: 300; loop: true"></a-cylinder></a-entity>
-        <a-entity position="3.5 0.1 2" interactable="isFaulty: true; successTitle: 'Перегрузка устранена!'; successText: 'Лишние приборы отключены.'; explanation: 'Включение в один удлинитель утюга, обогревателя и чайника одновременно вызывает перегрев проводки. Она может расплавиться и загореться.'"><a-box class="danger-effect" position="0 0 0" width="0.8" height="0.15" depth="0.3" color="#e67e22" animation="property: material.color; to: #d35400; dir: alternate; dur: 400; loop: true"></a-box><a-box position="0 0 0" width="0.75" height="0.14" depth="0.28" color="#ecf0f1"></a-box><a-box class="danger-effect" position="-0.2 0.15 0" width="0.1" height="0.2" depth="0.15" color="#2c3e50"></a-box><a-box class="danger-effect" position="0 0.15 0" width="0.1" height="0.2" depth="0.15" color="#34495e"></a-box><a-box class="danger-effect" position="0.2 0.15 0" width="0.1" height="0.2" depth="0.15" color="#2c3e50"></a-box></a-entity>
-        <a-entity position="-4.5 0 0" interactable="isFaulty: true; successTitle: 'Торшер выключен!'; successText: 'Лампочка заменена на безопасную LED.'; explanation: 'Использование ламп накаливания мощностью больше, чем разрешено производителем светильника, плавит плафон и ведет к пожару.'"><a-cylinder position="0 0.1 0" radius="0.3" height="0.2" color="#7f8c8d"></a-cylinder> <a-cylinder position="0 1 0" radius="0.05" height="2" color="#7f8c8d"></a-cylinder> <a-cone class="danger-effect" position="0 2 0" radius-bottom="0.4" radius-top="0.1" height="0.6" color="#e74c3c" material="opacity: 0.8" animation="property: material.opacity; to: 0.5; dir: alternate; dur: 200; loop: true"></a-cone><a-cone position="0 2 0" radius-bottom="0.35" radius-top="0.08" height="0.55" color="#f1c40f"></a-cone> </a-entity>
-        <a-entity position="0 0.8 4" rotation="0 45 0" interactable="isFaulty: true; successTitle: 'Утюг отключен!'; successText: 'Ты предотвратил возгорание ткани.'; explanation: 'Оставлять нагревательные приборы (утюги, плойки, обогреватели) без присмотра включенными в сеть — самая частая причина пожаров.'"><a-box position="0 0 0" width="1.5" height="0.05" depth="0.4" color="#bdc3c7"></a-box> <a-cylinder position="-0.5 -0.4 0" radius="0.02" height="0.8" color="#7f8c8d"></a-cylinder> <a-cylinder position="0.5 -0.4 0" radius="0.02" height="0.8" color="#7f8c8d"></a-cylinder> <a-entity class="danger-effect" position="0.5 0.1 0"><a-box width="0.3" height="0.15" depth="0.15" color="#c0392b" animation="property: material.color; to: #e74c3c; dir: alternate; dur: 500; loop: true"></a-box><a-sphere position="0 0.2 0" radius="0.05" color="#fff" material="opacity: 0.5" animation="property: position; to: 0 0.5 0; dur: 1000; loop: true"></a-sphere></a-entity></a-entity>
+        <a-entity position="5.6 1.5 3" rotation="0 -90 0" interactable="info: 'Книжный стеллаж. Книги расположены вдали от мощных источников тепла и лампочек.'">
+             <a-box mixin="solid" width="2" height="3" depth="0.4" color="#8e44ad" position="0 0 0"></a-box>
+             <a-box mixin="solid" position="0 0.5 0.1" width="1.8" height="0.05" depth="0.35" color="#9b59b6"></a-box>
+             <a-box position="-0.5 0.8 0.15" width="0.1" height="0.5" depth="0.3" color="#c0392b"></a-box>
+             <a-box position="-0.3 0.8 0.15" width="0.1" height="0.4" depth="0.3" color="#2980b9"></a-box>
+             <a-box mixin="solid" position="0 -0.5 0.1" width="1.8" height="0.05" depth="0.35" color="#9b59b6"></a-box>
+             <a-box position="0.2 -0.2 0.15" width="0.4" height="0.1" depth="0.3" color="#27ae60"></a-box>
+        </a-entity>
+
+        <a-entity position="4 0.4 4.5" interactable="info: 'Комнатное растение. Полив производится аккуратно, вода не попадает на розетки и электроприборы.'">
+            <a-cylinder mixin="solid" radius="0.4" height="0.8" color="#d35400"></a-cylinder>
+            <a-cone mixin="solid" position="0 1 0" radius-bottom="0.5" height="1.5" color="#27ae60"></a-cone>
+        </a-entity>
+
+        <a-entity position="-2.5 2.5 -5.95" interactable="info: 'Окно. Естественное освещение в норме, рамы сухие.'">
+            <a-box width="1.4" height="1.8" depth="0.05" color="#ffffff"></a-box>
+            <a-plane position="0 0 0.03" width="1.2" height="1.6" color="#3498db"></a-plane>
+            <a-box position="0 0 0.04" width="0.05" height="1.6" depth="0.02" color="#ffffff"></a-box>
+            <a-box position="0 0 0.04" width="1.2" height="0.05" depth="0.02" color="#ffffff"></a-box>
+        </a-entity>
+        <a-entity position="2.5 2.5 -5.95" interactable="info: 'Окно. Герметичность не нарушена, вода во время дождя на проводку не попадет.'">
+            <a-box width="1.4" height="1.8" depth="0.05" color="#ffffff"></a-box>
+            <a-plane position="0 0 0.03" width="1.2" height="1.6" color="#3498db"></a-plane>
+            <a-box position="0 0 0.04" width="0.05" height="1.6" depth="0.02" color="#ffffff"></a-box>
+            <a-box position="0 0 0.04" width="1.2" height="0.05" depth="0.02" color="#ffffff"></a-box>
+        </a-entity>
+
+        <a-entity position="0 0 -5.3" scale="1.4 1.4 1.4">
+            <a-entity position="0 0.4 0" interactable="info: 'Тумба под ТВ. Провода за ней уложены аккуратно, ничего не защемлено ножками мебели.'">
+                <a-box mixin="solid" width="2.4" height="0.6" depth="0.6" color="#7f8c8d"></a-box>
+                <a-box position="-0.6 0 0.31" width="1" height="0.5" depth="0.02" color="#95a5a6"></a-box>
+                <a-box position="0.6 0 0.31" width="1" height="0.5" depth="0.02" color="#95a5a6"></a-box>
+            </a-entity>
+            <a-entity position="0 1.4 0" interactable="info: 'Телевизор исправен. Проводка уложена нормально, искрения нет, вилка надежно сидит в розетке.'">
+                <a-box mixin="solid" width="2.1" height="1.3" depth="0.1" color="#333"></a-box>
+                <a-box position="0 0 0.06" width="2" height="1.2" depth="0.01" color="#000" material="roughness: 0.1; metalness: 0.8"></a-box>
+            </a-entity>
+        </a-entity>
+
+        <a-entity position="-5.95 0.5 0" rotation="0 90 0" interactable="info: 'Розетка. Корпус целый, нет следов нагара, надежно закреплена в стене.'">
+            <a-box mixin="socket-base"></a-box> <a-box mixin="socket-front" position="0 0 0.01"></a-box>
+            <a-circle position="-0.04 0 0.021" radius="0.015" color="#000"></a-circle>
+            <a-circle position="0.04 0 0.021" radius="0.015" color="#000"></a-circle>
+        </a-entity>
+
+        <a-entity position="5.95 0.5 1" rotation="0 -90 0" interactable="info: 'Розетка. Контакты чистые, штепсель не болтается.'">
+            <a-box mixin="socket-base"></a-box> <a-box mixin="socket-front" position="0 0 0.01"></a-box>
+            <a-circle position="-0.04 0 0.021" radius="0.015" color="#000"></a-circle>
+            <a-circle position="0.04 0 0.021" radius="0.015" color="#000"></a-circle>
+        </a-entity>
+
+        <a-entity working-switch position="5.95 1.2 5" rotation="0 -90 0">
+            <a-box mixin="socket-base" width="0.2" height="0.3"></a-box>
+            <a-box mixin="socket-front" width="0.18" height="0.28" position="0 0 0.01"></a-box>
+            <a-box position="0 0 0.025" width="0.1" height="0.15" depth="0.02" color="#ecf0f1" rotation="-10 0 0"></a-box> </a-entity>
+
+
+        <a-entity position="-1 0.6 -5.95" interactable="isFaulty: true; successTitle: 'Розетка обесточена!'; successText: 'Ты вовремя заметил неисправность.'; explanation: 'Искрение говорит о плохом контакте. Это может вызвать пожар!'">
+            <a-box mixin="socket-base"></a-box> <a-box mixin="socket-front" position="0 0 0.01"></a-box>
+            <a-sphere class="danger-effect" mixin="danger-glow" position="0 0 0.05" radius="0.08" color="#f1c40f" animation="property: scale; to: 1.8 1.8 1.8; dir: alternate; dur: 100; loop: true"></a-sphere>
+        </a-entity>
+
+        <a-entity position="-5.95 1.2 5" rotation="0 90 0" interactable="isFaulty: true; successTitle: 'Выключатель заменен!'; successText: 'Установлен новый выключатель с целым корпусом.'; explanation: 'Разбитый корпус выключателя очень опасен — можно коснуться контактов под напряжением!'">
+            <a-box mixin="socket-base" width="0.2" height="0.3"></a-box>
+            <a-box mixin="socket-front" width="0.18" height="0.28" position="0 0 0.01" color="#bdc3c7"></a-box> <a-box position="0 0.08 0.02" width="0.15" height="0.1" depth="0.02" color="#000"></a-box> <a-sphere class="danger-effect" mixin="danger-glow" position="0 0.08 0.05" radius="0.04" color="#f1c40f" animation="property: scale; to: 1.5 1.5 1.5; dir: alternate; dur: 80; loop: true"></a-sphere>
+        </a-entity>
         
-        <a-light type="ambient" color="#fff" intensity="0.7"></a-light>
-        <a-light type="point" intensity="0.4" position="0 3 0"></a-light>
+        <a-entity position="2.5 0.1 -4.5" rotation="0 15 0" interactable="isFaulty: true; successTitle: 'Удлинитель разгружен!'; successText: 'Лишние приборы отключены.'; explanation: 'Включение множества мощных приборов в один удлинитель вызывает перегрев и оплавление.'">
+            <a-box mixin="solid" class="danger-effect" position="0 0 0" width="1" height="0.15" depth="0.3" color="#e67e22" animation="property: material.color; to: #d35400; dir: alternate; dur: 400; loop: true"></a-box>
+            <a-box mixin="solid" position="0 0 0" width="0.95" height="0.14" depth="0.28" color="#ffffff"></a-box>
+            <a-box mixin="solid" class="danger-effect" position="-0.3 0.15 0" width="0.15" height="0.2" depth="0.2" color="#2c3e50"></a-box>
+            <a-box mixin="solid" class="danger-effect" position="0 0.15 0" width="0.15" height="0.2" depth="0.2" color="#34495e"></a-box>
+            <a-box mixin="solid" class="danger-effect" position="0.3 0.15 0" width="0.15" height="0.2" depth="0.2" color="#2c3e50"></a-box>
+        </a-entity>
+
+        <a-entity position="4 0.03 -5.2" rotation="0 -45 0" interactable="isFaulty: true; successTitle: 'Кабель заменен!'; successText: 'Шнур заменен на цельный, в двойной изоляции.'; explanation: 'Касание оголенного провода или скрутки изолентой смертельно опасно!'">
+            <a-cylinder mixin="solid" radius="0.02" height="2.5" rotation="90 0 0" color="#333"></a-cylinder> <a-cylinder class="danger-effect" mixin="danger-glow" position="0 0 0.3" radius="0.025" height="0.4" rotation="90 0 0" color="#e74c3c" animation="property: material.color; to: #c0392b; dir: alternate; dur: 300; loop: true"></a-cylinder>
+        </a-entity>
+        
+        <a-entity position="-4.5 0 2" interactable="isFaulty: true; successTitle: 'Торшер выключен!'; successText: 'Лампа заменена на LED.'; explanation: 'Использование ламп накаливания мощностью выше допустимой плавит пластиковые плафоны.'">
+            <a-cylinder mixin="metal" position="0 0.1 0" radius="0.3" height="0.1"></a-cylinder>
+            <a-cylinder mixin="metal" position="0 1 0" radius="0.04" height="2"></a-cylinder>
+            <a-cone mixin="solid" class="danger-effect" position="0 2 0" radius-bottom="0.5" radius-top="0.1" height="0.7" color="#e74c3c" material="opacity: 0.8; emissive: #e74c3c; emissiveIntensity: 0.3" animation="property: material.opacity; to: 0.5; dir: alternate; dur: 200; loop: true"></a-cone>
+            <a-cone mixin="solid" position="0 2 0" radius-bottom="0.45" radius-top="0.08" height="0.65" color="#f1c40f"></a-cone>
+        </a-entity>
+        
+        <a-entity position="-3 0.8 4" rotation="0 -30 0" interactable="isFaulty: true; successTitle: 'Утюг отключен!'; successText: 'Пожар предотвращен.'; explanation: 'Никогда не оставляй включенный утюг без присмотра, даже на пару минут!'">
+            <a-box mixin="solid" position="0 0 0" width="1.8" height="0.05" depth="0.5" color="#bdc3c7"></a-box> 
+            <a-cylinder mixin="metal" position="-0.6 -0.4 0" radius="0.03" height="0.8"></a-cylinder>
+            <a-cylinder mixin="metal" position="0.6 -0.4 0" radius="0.03" height="0.8"></a-cylinder>
+            <a-entity class="danger-effect" position="0.4 0.05 0" rotation="0 20 0">
+                <a-box mixin="solid" width="0.4" height="0.15" depth="0.2" color="#c0392b" animation="property: material.color; to: #e74c3c; dir: alternate; dur: 500; loop: true"></a-box>
+                <a-box mixin="solid" position="0 0.1 0" width="0.35" height="0.1" depth="0.18" color="#ecf0f1"></a-box>
+                <a-torus mixin="solid" position="0 0.2 0" radius="0.1" radius-tubular="0.03" rotation="90 0 0" color="#ecf0f1"></a-torus>
+                <a-sphere mixin="danger-glow" position="0 0.3 0" radius="0.08" color="#fff" material="opacity: 0.4" animation="property: position; to: 0 0.8 0; dur: 1200; loop: true; easing: linear"></a-sphere>
+            </a-entity>
+        </a-entity>
+        
     </a-scene>
 </body>
 </html>
