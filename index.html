@@ -43,7 +43,6 @@
             }
         }
         
-        // ВНИМАНИЕ: Теперь в игре 6 нарушений! (Добавлен сломанный выключатель)
         let score = 0; const maxScore = 6; let dialogTimeout;
         
         function showDialog(title, text, type) {
@@ -55,7 +54,6 @@
             clearTimeout(dialogTimeout); dialogTimeout = setTimeout(() => { box.style.display = 'none'; }, 6000);
         }
 
-        // Логика инспекции предметов
         AFRAME.registerComponent('interactable', {
             schema: { isFaulty: {type: 'boolean', default: false}, info: {type: 'string', default: ''}, successTitle: {type: 'string', default: 'Исправлено!'}, successText: {type: 'string', default: ''}, explanation: {type: 'string', default: ''} },
             init: function () {
@@ -67,7 +65,7 @@
                         if (!this.isFixed) {
                             this.isFixed = true; playSound('success');
                             let effects = el.querySelectorAll('.danger-effect'); effects.forEach(e => e.parentNode.removeChild(e));
-                            el.setAttribute('animation__bounce', 'property: position; dir: alternate; dur: 200; to: ' + el.object3D.position.x + ' ' + (el.object3D.position.y + 0.1) + ' ' + el.object3D.position.z + '; loop: 2');
+                            el.setAttribute('animation__bounce', 'property: position; dir: alternate; dur: 200; to: ' + el.object3D.position.x + ' ' + (el.object3D.position.y + 0.05) + ' ' + el.object3D.position.z + '; loop: 2');
                             score++; document.getElementById('score').innerText = score + '/' + maxScore; showDialog(data.successTitle, data.successText, 'success');
                             if (score === maxScore) setTimeout(() => { document.getElementById('end-screen').style.display = 'flex'; }, 1500);
                         } else { playSound('click'); showDialog('Вольтик напоминает:', data.explanation, 'info'); }
@@ -76,11 +74,10 @@
             }
         });
 
-        // Логика работающего выключателя
         AFRAME.registerComponent('working-switch', {
             init: function () {
                 let on = true; let el = this.el;
-                el.addEventListener('mouseenter', () => el.setAttribute('scale', '1.1 1.1 1.1'));
+                el.addEventListener('mouseenter', () => el.setAttribute('scale', '1.05 1.05 1.05'));
                 el.addEventListener('mouseleave', () => el.setAttribute('scale', '1 1 1'));
                 el.addEventListener('click', () => {
                     on = !on;
@@ -98,13 +95,13 @@
         <div id="header">Осмотри комнату и найди нарушения<br><span style="font-size: 14px; font-weight: normal;">Исправлено: <span id="score">0/6</span></span></div>
         <div id="dialog-box" onclick="this.style.display='none'">
             <div id="dialog-title">Вольтик</div>
-            <div id="dialog-text">Привет! Свайпай по экрану, чтобы осматриваться. Кликай на предметы для их проверки!</div>
+            <div id="dialog-text">Привет! Свайпай по экрану во все стороны, чтобы осматриваться. Кликай на предметы для их проверки!</div>
             <div class="close-hint">(нажми, чтобы скрыть)</div>
         </div>
     </div>
     <div id="end-screen">
-        <h1>Ура! Одобрено!</h1>
-        <p>Комната в полной безопасности. Ты отлично справился с ролью инспектора Госэнергогазнадзора!</p>
+        <h1>Отлично! Госэнергогазнадзор одобряет!</h1>
+        <p>Ты помог Вольтику найти и устранить все нарушения.</p>
         <button id="restart-btn" onclick="location.reload()">Пройти проверку заново</button>
     </div>
 
@@ -113,11 +110,12 @@
             <a-mixin id="solid" shadow="cast: true; receive: true"></a-mixin>
             <a-mixin id="danger-glow" material="emissive: #e74c3c; emissiveIntensity: 0.8"></a-mixin>
             <a-mixin id="metal" color="#7f8c8d" material="roughness: 0.5; metalness: 0.5"></a-mixin>
-            <a-mixin id="socket-base" width="0.25" height="0.25" depth="0.02" color="#333"></a-mixin>
-            <a-mixin id="socket-front" width="0.22" height="0.22" depth="0.02" color="#ffffff"></a-mixin>
+            
+            <a-mixin id="socket-base" width="0.12" height="0.12" depth="0.015" color="#ecf0f1"></a-mixin>
+            <a-mixin id="socket-front" width="0.09" height="0.09" depth="0.01" color="#ffffff"></a-mixin>
         </a-assets>
 
-        <a-entity camera look-controls="wasdControlsEnabled: false; magicWindowTrackingEnabled: false" position="0 1.6 0"></a-entity>
+        <a-entity camera look-controls position="0 1.6 0"></a-entity>
         
         <a-light id="main-light" type="point" position="0 5 0" color="#fff" intensity="0.8" distance="15" castShadow="true"></a-light>
         <a-light type="ambient" color="#fff" intensity="0.3"></a-light>
@@ -137,7 +135,7 @@
 
         <a-plane position="0 0.01 -1.5" rotation="-90 0 0" width="8" height="5" color="#e67e22" shadow="receive: true" interactable="info: 'Ковер на полу. Под ним нет скрытых проводов от техники — это очень важно для пожарной безопасности!'"></a-plane>
 
-        <a-entity position="0 0.5 1" rotation="0 180 0" interactable="info: 'Уютный диван. Стоит на безопасном расстоянии от обогревателей и не пережимает кабели от электроприборов.'">
+        <a-entity position="0 0.5 1" rotation="0 180 0" interactable="info: 'Уютный диван. Стоит на безопасном расстоянии от обогревателей и не пережимает кабели.'">
             <a-box mixin="solid" position="0 0 0" width="2.2" height="0.4" depth="1" color="#34495e"></a-box>
             <a-box mixin="solid" position="0 0.4 -0.4" width="2.2" height="0.6" depth="0.2" color="#2c3e50"></a-box>
             <a-box mixin="solid" position="-1.1 0.2 0" width="0.2" height="0.4" depth="1" color="#2c3e50"></a-box>
@@ -154,7 +152,7 @@
              <a-cylinder mixin="solid" position="0.5 0 -0.3" radius="0.04" height="0.4" color="#333"></a-cylinder>
         </a-entity>
 
-        <a-entity position="-5.2 2 -3" rotation="0 90 0" interactable="info: 'Шкаф для одежды. Стоит устойчиво. Позади него нет заслоненных розеток, к которым затруднен доступ.'">
+        <a-entity position="-5.2 2 -3" rotation="0 90 0" interactable="info: 'Шкаф для одежды. Позади него нет заслоненных розеток, к которым затруднен доступ.'">
             <a-box mixin="solid" width="1.8" height="3.8" depth="0.8" color="#8e44ad"></a-box>
             <a-box mixin="solid" position="-0.45 0 0.41" width="0.85" height="3.7" depth="0.02" color="#9b59b6"></a-box>
             <a-box mixin="solid" position="0.45 0 0.41" width="0.85" height="3.7" depth="0.02" color="#9b59b6"></a-box>
@@ -162,24 +160,20 @@
             <a-cylinder mixin="metal" position="0.1 0 0.43" radius="0.02" height="0.2"></a-cylinder>
         </a-entity>
 
-        <a-entity position="5.3 1.8 -4" rotation="0 -90 0" interactable="info: 'Холодильник. Задняя стенка (где компрессор) не прижата вплотную к обоям, вентиляция не перекрыта. Подключен напрямую, без удлинителей.'">
+        <a-entity position="5.3 1.8 -4" rotation="0 -90 0" interactable="info: 'Холодильник. Задняя стенка не прижата вплотную, вентиляция не перекрыта. Подключен напрямую.'">
             <a-box mixin="solid" width="1.4" height="3.5" depth="1.2" color="#ecf0f1"></a-box>
             <a-box position="0 -0.5 0.61" width="1.35" height="2.4" depth="0.02" color="#bdc3c7"></a-box>
             <a-box position="0 1.25 0.61" width="1.35" height="0.9" depth="0.02" color="#bdc3c7"></a-box>
-            <a-box position="-0.6 -0.5 0.63" width="0.05" height="0.6" depth="0.05" color="#95a5a6"></a-box>
-            <a-box position="-0.6 1.25 0.63" width="0.05" height="0.4" depth="0.05" color="#95a5a6"></a-box>
         </a-entity>
         
         <a-entity position="5.6 1.5 3" rotation="0 -90 0" interactable="info: 'Книжный стеллаж. Книги расположены вдали от мощных источников тепла и лампочек.'">
              <a-box mixin="solid" width="2" height="3" depth="0.4" color="#8e44ad" position="0 0 0"></a-box>
              <a-box mixin="solid" position="0 0.5 0.1" width="1.8" height="0.05" depth="0.35" color="#9b59b6"></a-box>
              <a-box position="-0.5 0.8 0.15" width="0.1" height="0.5" depth="0.3" color="#c0392b"></a-box>
-             <a-box position="-0.3 0.8 0.15" width="0.1" height="0.4" depth="0.3" color="#2980b9"></a-box>
              <a-box mixin="solid" position="0 -0.5 0.1" width="1.8" height="0.05" depth="0.35" color="#9b59b6"></a-box>
-             <a-box position="0.2 -0.2 0.15" width="0.4" height="0.1" depth="0.3" color="#27ae60"></a-box>
         </a-entity>
 
-        <a-entity position="4 0.4 4.5" interactable="info: 'Комнатное растение. Полив производится аккуратно, вода не попадает на розетки и электроприборы.'">
+        <a-entity position="4 0.4 4.5" interactable="info: 'Комнатное растение. Полив производится аккуратно, вода не попадает на розетки.'">
             <a-cylinder mixin="solid" radius="0.4" height="0.8" color="#d35400"></a-cylinder>
             <a-cone mixin="solid" position="0 1 0" radius-bottom="0.5" height="1.5" color="#27ae60"></a-cone>
         </a-entity>
@@ -198,7 +192,7 @@
         </a-entity>
 
         <a-entity position="0 0 -5.3" scale="1.4 1.4 1.4">
-            <a-entity position="0 0.4 0" interactable="info: 'Тумба под ТВ. Провода за ней уложены аккуратно, ничего не защемлено ножками мебели.'">
+            <a-entity position="0 0.4 0" interactable="info: 'Тумба под ТВ. Провода за ней уложены аккуратно, ничего не защемлено.'">
                 <a-box mixin="solid" width="2.4" height="0.6" depth="0.6" color="#7f8c8d"></a-box>
                 <a-box position="-0.6 0 0.31" width="1" height="0.5" depth="0.02" color="#95a5a6"></a-box>
                 <a-box position="0.6 0 0.31" width="1" height="0.5" depth="0.02" color="#95a5a6"></a-box>
@@ -210,34 +204,44 @@
         </a-entity>
 
         <a-entity position="-5.95 0.5 0" rotation="0 90 0" interactable="info: 'Розетка. Корпус целый, нет следов нагара, надежно закреплена в стене.'">
-            <a-box mixin="socket-base"></a-box> <a-box mixin="socket-front" position="0 0 0.01"></a-box>
-            <a-circle position="-0.04 0 0.021" radius="0.015" color="#000"></a-circle>
-            <a-circle position="0.04 0 0.021" radius="0.015" color="#000"></a-circle>
+            <a-box mixin="socket-base"></a-box> 
+            <a-box mixin="socket-front" position="0 0 0.01"></a-box>
+            <a-circle position="-0.025 0 0.016" radius="0.01" color="#000"></a-circle>
+            <a-circle position="0.025 0 0.016" radius="0.01" color="#000"></a-circle>
         </a-entity>
 
         <a-entity position="5.95 0.5 1" rotation="0 -90 0" interactable="info: 'Розетка. Контакты чистые, штепсель не болтается.'">
-            <a-box mixin="socket-base"></a-box> <a-box mixin="socket-front" position="0 0 0.01"></a-box>
-            <a-circle position="-0.04 0 0.021" radius="0.015" color="#000"></a-circle>
-            <a-circle position="0.04 0 0.021" radius="0.015" color="#000"></a-circle>
+            <a-box mixin="socket-base"></a-box> 
+            <a-box mixin="socket-front" position="0 0 0.01"></a-box>
+            <a-circle position="-0.025 0 0.016" radius="0.01" color="#000"></a-circle>
+            <a-circle position="0.025 0 0.016" radius="0.01" color="#000"></a-circle>
         </a-entity>
 
         <a-entity working-switch position="5.95 1.2 5" rotation="0 -90 0">
-            <a-box mixin="socket-base" width="0.2" height="0.3"></a-box>
-            <a-box mixin="socket-front" width="0.18" height="0.28" position="0 0 0.01"></a-box>
-            <a-box position="0 0 0.025" width="0.1" height="0.15" depth="0.02" color="#ecf0f1" rotation="-10 0 0"></a-box> </a-entity>
-
-
-        <a-entity position="-1 0.6 -5.95" interactable="isFaulty: true; successTitle: 'Розетка обесточена!'; successText: 'Ты вовремя заметил неисправность.'; explanation: 'Искрение говорит о плохом контакте. Это может вызвать пожар!'">
-            <a-box mixin="socket-base"></a-box> <a-box mixin="socket-front" position="0 0 0.01"></a-box>
-            <a-sphere class="danger-effect" mixin="danger-glow" position="0 0 0.05" radius="0.08" color="#f1c40f" animation="property: scale; to: 1.8 1.8 1.8; dir: alternate; dur: 100; loop: true"></a-sphere>
+            <a-box mixin="socket-base"></a-box>
+            <a-box width="0.09" height="0.09" depth="0.015" position="0 0 0.01" color="#ffffff" rotation="-5 0 0"></a-box>
         </a-entity>
 
-        <a-entity position="-5.95 1.2 5" rotation="0 90 0" interactable="isFaulty: true; successTitle: 'Выключатель заменен!'; successText: 'Установлен новый выключатель с целым корпусом.'; explanation: 'Разбитый корпус выключателя очень опасен — можно коснуться контактов под напряжением!'">
-            <a-box mixin="socket-base" width="0.2" height="0.3"></a-box>
-            <a-box mixin="socket-front" width="0.18" height="0.28" position="0 0 0.01" color="#bdc3c7"></a-box> <a-box position="0 0.08 0.02" width="0.15" height="0.1" depth="0.02" color="#000"></a-box> <a-sphere class="danger-effect" mixin="danger-glow" position="0 0.08 0.05" radius="0.04" color="#f1c40f" animation="property: scale; to: 1.5 1.5 1.5; dir: alternate; dur: 80; loop: true"></a-sphere>
+
+        <a-entity position="-2.5 0.6 -5.95" interactable="isFaulty: true; successTitle: 'Розетка обесточена!'; successText: 'Ты вовремя заметил неисправность.'; explanation: 'Искрение говорит о плохом контакте. Это может вызвать пожар!'">
+            <a-box mixin="socket-base"></a-box> 
+            <a-box mixin="socket-front" position="0 0 0.01"></a-box>
+            <a-circle position="-0.025 0 0.016" radius="0.01" color="#000"></a-circle>
+            <a-circle position="0.025 0 0.016" radius="0.01" color="#000"></a-circle>
+            <a-sphere class="danger-effect" mixin="danger-glow" position="0 0 0.03" radius="0.04" color="#f1c40f" animation="property: scale; to: 1.5 1.5 1.5; dir: alternate; dur: 100; loop: true"></a-sphere>
+        </a-entity>
+
+        <a-entity position="-5.95 1.2 5" rotation="0 90 0" interactable="isFaulty: true; successTitle: 'Выключатель заменен!'; successText: 'Установлен новый выключатель с целым корпусом.'; explanation: 'Разбитый или обгоревший корпус выключателя очень опасен!'">
+            <a-box mixin="socket-base"></a-box>
+            <a-box width="0.09" height="0.09" depth="0.015" position="0 0 0.01" color="#ffffff" rotation="-5 0 0"></a-box>
+            
+            <a-entity class="danger-effect" position="0 0 0.012">
+                <a-box width="0.09" height="0.09" depth="0.01" color="#333" rotation="5 0 0"></a-box>
+                <a-sphere mixin="danger-glow" position="0 0 0.03" radius="0.03" color="#f1c40f" animation="property: scale; to: 1.5 1.5 1.5; dir: alternate; dur: 80; loop: true"></a-sphere>
+            </a-entity>
         </a-entity>
         
-        <a-entity position="2.5 0.1 -4.5" rotation="0 15 0" interactable="isFaulty: true; successTitle: 'Удлинитель разгружен!'; successText: 'Лишние приборы отключены.'; explanation: 'Включение множества мощных приборов в один удлинитель вызывает перегрев и оплавление.'">
+        <a-entity position="2.5 0.1 -4.5" interactable="isFaulty: true; successTitle: 'Удлинитель разгружен!'; successText: 'Лишние приборы отключены.'; explanation: 'Включение множества мощных приборов в один удлинитель вызывает перегрев.'">
             <a-box mixin="solid" class="danger-effect" position="0 0 0" width="1" height="0.15" depth="0.3" color="#e67e22" animation="property: material.color; to: #d35400; dir: alternate; dur: 400; loop: true"></a-box>
             <a-box mixin="solid" position="0 0 0" width="0.95" height="0.14" depth="0.28" color="#ffffff"></a-box>
             <a-box mixin="solid" class="danger-effect" position="-0.3 0.15 0" width="0.15" height="0.2" depth="0.2" color="#2c3e50"></a-box>
@@ -245,18 +249,26 @@
             <a-box mixin="solid" class="danger-effect" position="0.3 0.15 0" width="0.15" height="0.2" depth="0.2" color="#2c3e50"></a-box>
         </a-entity>
 
-        <a-entity position="4 0.03 -5.2" rotation="0 -45 0" interactable="isFaulty: true; successTitle: 'Кабель заменен!'; successText: 'Шнур заменен на цельный, в двойной изоляции.'; explanation: 'Касание оголенного провода или скрутки изолентой смертельно опасно!'">
-            <a-cylinder mixin="solid" radius="0.02" height="2.5" rotation="90 0 0" color="#333"></a-cylinder> <a-cylinder class="danger-effect" mixin="danger-glow" position="0 0 0.3" radius="0.025" height="0.4" rotation="90 0 0" color="#e74c3c" animation="property: material.color; to: #c0392b; dir: alternate; dur: 300; loop: true"></a-cylinder>
+        <a-entity position="0 0 0" interactable="isFaulty: true; successTitle: 'Кабель заменен!'; successText: 'Шнур заменен на цельный, в двойной изоляции.'; explanation: 'Оголенный провод смертельно опасен!'">
+            
+            <a-box position="2.5 0.1 -5" width="2" height="1" depth="2" material="opacity: 0; transparent: true"></a-box>
+            
+            <a-cylinder mixin="solid" position="-2.5 0.3 -5.9" radius="0.015" height="0.6" color="#333"></a-cylinder>
+            <a-cylinder mixin="solid" position="0 0.02 -5.9" radius="0.015" height="5" rotation="0 0 90" color="#333"></a-cylinder>
+            <a-cylinder mixin="solid" position="2.5 0.02 -5.2" radius="0.015" height="1.4" rotation="90 0 0" color="#333"></a-cylinder> <a-entity class="danger-effect" position="2.5 0.02 -4.8">
+                <a-cylinder mixin="danger-glow" radius="0.02" height="0.3" rotation="90 0 0" color="#e74c3c" animation="property: material.color; to: #c0392b; dir: alternate; dur: 300; loop: true"></a-cylinder>
+                <a-sphere mixin="danger-glow" position="0 0.05 0" radius="0.04" color="#f1c40f" animation="property: scale; to: 1.5 1.5 1.5; dir: alternate; dur: 100; loop: true"></a-sphere>
+            </a-entity>
         </a-entity>
         
-        <a-entity position="-4.5 0 2" interactable="isFaulty: true; successTitle: 'Торшер выключен!'; successText: 'Лампа заменена на LED.'; explanation: 'Использование ламп накаливания мощностью выше допустимой плавит пластиковые плафоны.'">
+        <a-entity position="-4.5 0 2" interactable="isFaulty: true; successTitle: 'Торшер выключен!'; successText: 'Лампа заменена на LED.'; explanation: 'Использование ламп накаливания высокой мощности плавит пластиковые плафоны.'">
             <a-cylinder mixin="metal" position="0 0.1 0" radius="0.3" height="0.1"></a-cylinder>
             <a-cylinder mixin="metal" position="0 1 0" radius="0.04" height="2"></a-cylinder>
             <a-cone mixin="solid" class="danger-effect" position="0 2 0" radius-bottom="0.5" radius-top="0.1" height="0.7" color="#e74c3c" material="opacity: 0.8; emissive: #e74c3c; emissiveIntensity: 0.3" animation="property: material.opacity; to: 0.5; dir: alternate; dur: 200; loop: true"></a-cone>
             <a-cone mixin="solid" position="0 2 0" radius-bottom="0.45" radius-top="0.08" height="0.65" color="#f1c40f"></a-cone>
         </a-entity>
         
-        <a-entity position="-3 0.8 4" rotation="0 -30 0" interactable="isFaulty: true; successTitle: 'Утюг отключен!'; successText: 'Пожар предотвращен.'; explanation: 'Никогда не оставляй включенный утюг без присмотра, даже на пару минут!'">
+        <a-entity position="-3 0.8 4" rotation="0 -30 0" interactable="isFaulty: true; successTitle: 'Утюг отключен!'; successText: 'Пожар предотвращен.'; explanation: 'Никогда не оставляй включенный утюг без присмотра!'">
             <a-box mixin="solid" position="0 0 0" width="1.8" height="0.05" depth="0.5" color="#bdc3c7"></a-box> 
             <a-cylinder mixin="metal" position="-0.6 -0.4 0" radius="0.03" height="0.8"></a-cylinder>
             <a-cylinder mixin="metal" position="0.6 -0.4 0" radius="0.03" height="0.8"></a-cylinder>
